@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+
+<!-- This html file uses the sample code of dynamic bar chart provided by CanvasJS.com: http://canvasjs.com/editor/?id=http://canvasjs.com/example/gallery/dynamic/realtime_column/-->
+
+<!-- Instructions of running raylin_rate.html: 
+1) Put the 4 files (raylin_rate.html, raylin_rate.py, and raylin_rate_avg.py, canvasjs.min.js) in the same folder (same directory)
+2) Open a terminal, cd to the directory of 1), run raylin_rate.py
+3) Open another terminal, cd to the directory of 1), type the command: websocketd --port=8080 ./raylin_rate_avg.py
+4) Double click this current html file (raylin_rate.html) to see the real-time bar chart that displays tweets per minute for Hillary Clinton and Donald Trump
+-->
+
+<html>
+<head>
+	<script type="text/javascript">
+	window.onload = function () {
+		// initial values of tweeter rates for both candidates to be 0
+		var rate = [
+		{label: "Hillary Clinton", y: 0}	,
+		{label: "Donald Trump", y: 0},
+		];
+		var notes = "Real-time bar chart that displays number of tweets per minute that contain keywords related to Hillary Clinton and Donald Trump respectively";
+
+		var barchart = new CanvasJS.Chart("chartContainer",{
+			theme: "theme2",
+			title:{ 
+				text: "Twitter Presence: Hillary Clinton V.S. Donald Trump"
+			},
+			axisY: {				
+				title: "Rate=Tweets/Minute"
+			},					
+			legend:{
+				verticalAlign: "bottom",
+				horizontalAlign: "centre",
+				fontSize: 20
+
+			},
+			data : [{
+				type: "column",
+				showInLegend: true,
+				legendMarkerType: "none",				
+				legendText: notes,
+				indexLabel: "{y}",
+				dataPoints: rate
+			}]
+		});
+
+		// pass data from websocket to front-end bar chart
+		barchart.render();
+
+		var updateInterval = 1000;  // 1000 milliseconds, = 1 second: front-end updates with data every second 
+
+		// extract twitter rates for Hillary and Trump from websocket 
+		var ws = new WebSocket("ws://localhost:8080/");
+    		ws.onmessage = function(event) {
+      		var inputJSON = JSON.parse(event.data);
+      		 h_rate = inputJSON.speed_h;  // extract Hillary's rate (number of tweets per minute)
+      		 t_rate = inputJSON.speed_t;  // extract Trump's rate (number of tweets per minute)
+      		 level_h = inputJSON.level_h; // h_level indicates whether alert should be given for Hillary 
+      		 level_t = inputJSON.level_t; // t_level indicates whether alert should be given for Trump
+
+    }
+
+    	// update dictionary of data for bar chart, with streaming data from websocket
+		var updateChart = function () {
+		
+			rate[0].y = h_rate;   // update rate for Hillary
+			rate[1].y = t_rate;   // update rate for Trump
+
+			if (level_h == 'spike') {
+				alert("Go Hillary!");  // alert indicates that Hillary's tweeter rate spikes 
+			}
+
+			if (level_h == 'plummet') {
+				alert("Hillary drops...");  // alert indicates that Hillary's tweeter rate drops
+			}
+
+			if (level_t == 'spike') {
+				alert("Go Trump!");  // alert indicates that Trump's tweeter rate spikes 
+			}
+
+			if (level_t == 'plummet') {
+				alert("Trump drops...");  // alert indicates that Trump's tweeter rate drops
+			}
+
+			barchart.render();
+
+		};
+
+
+		
+			// update bar chart after pre-specified interval (here the interval is 1 second)
+			setInterval(function(){updateChart()
+
+
+
+
+			}, updateInterval);
+
+		}	
+		</script>
+
+		<!-- this script credit to the CanvasJS dynamic bar chart library src code-->
+		<script type="text/javascript" src="./canvasjs.min.js"></script>
+	</head>
+<body>
+	<div id="chartContainer" style="height:550px; width:100%;">   <!--set the margin (500*100 of main) of the entire web page-->
+	</div>
+</body>
+
+</html>
