@@ -6,6 +6,7 @@
 This web application monitors the real-time arriving rate of tweets related to two potential candidates of 2016 U.S. presidential election: Hillary Clinton, the most-likely nominated presidential candidate representing the Democratic Party, and Donald Trump, the front-runner among Republican candidates. The frontend HTML webpage displays a dynamic bar chart with 2 bars whose heights indicate the “tweet rate” for Hillary Clinton and Donald Trump respectively. “Tweet rate” is defined as the average number of tweets generated per minute on Twitter. Being consistent with the commonly known “Blue for Democratic, Red for Republican”, the blue bar visualizes the “tweet rate” for Democratic Party’s candidate Hillary Clinton, and the red bar illustrates the “tweet rate” for Republican Party’s candidate Donald Trump.
 
 ![Tweet Rate for Hillary Clinton and Donald Trump](/hillary_mark.png)
+![Tweet Rate for Hillary Clinton and Donald Trump](/trump_mark.png)
 
 The dynamic bar chart automatically refreshes with newly arrived data once every second. The vertical axis of this dynamic bar chart automatically adjusts its scale according to the stream data. If the current second’s “twitter rate” for any candidate contributes to a 10% increase in the average “tweet rate” within the past minute, the frontend web browser would give an alert message that says “Go Hillary!” or “Go Trump!”. 
 
